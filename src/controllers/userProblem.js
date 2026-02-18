@@ -46,7 +46,7 @@ const createProblem = async (req, res) => {
 
 }
 
-// module.exports = createProblem;
+
 
 
 const updateProblem = async (req, res) => {
@@ -86,10 +86,11 @@ const updateProblem = async (req, res) => {
           return res.status(400).send("Error Occured")
         }
       }
-
-      const newProblem = await Problem.findByIdAndUpdate(id, { ...req.body }, { runValidators: true, new: true })
-      res.status(200).send(newProblem)
     }
+
+    const newProblem = await Problem.findByIdAndUpdate(id, { ...req.body }, { runValidators: true, new: true })
+    res.status(200).send(newProblem)
+
   }
   catch (err) {
     res.status(500).send("Error: " + err)
@@ -97,6 +98,56 @@ const updateProblem = async (req, res) => {
 
 }
 
+const deleteProblem = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!id)
+      return res.status(400).send("ID is Missing");
+
+    const deleteProblem = await Problem.findByIdAndDelete(id);
+
+    if (!deleteProblem)
+      return res.status(400).send("Problem is Missing");
+
+    res.status(200).send("Deleted Successfully");
+  }
+  catch (err) {
+    res.status(500).send("Error: " + err);
+  }
+}
+
+const getProblemById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!id)
+      return res.status(400).send("ID is Missing");
+
+    const getProblem = await Problem.findById(id);
+
+    if (!getProblem)
+      return res.status(404).send("Problem is Missing");
+
+    res.status(200).send(getProblem);
+  }
+  catch (err) {
+    res.status(500).send("Error: " + err);
+  }
+}
 
 
-module.exports = { createProblem, updateProblem };
+const getAllProblem = async (req, res) => {
+  try {
+    const getProblem = await Problem.find({});
+
+    if (getProblem.length == 0)
+      return res.status(404).send("Problem is Missing");
+
+    res.status(200).send(getProblem);
+  }
+  catch (err) {
+    res.status(500).send("Error: " + err);
+  }
+}
+
+
+module.exports = { createProblem, updateProblem, deleteProblem, getProblemById, getAllProblem };
