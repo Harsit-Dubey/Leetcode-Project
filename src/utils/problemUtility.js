@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require('axios');
 
 const getLanguageById = (lang) => {
 
@@ -12,20 +12,21 @@ const getLanguageById = (lang) => {
 
 }
 
-const submitBatch = async (Submissions) => {
+const submitBatch = async (submissions) => {
 
   const options = {
     method: 'POST',
-    url: 'https://judge0-ce.p.rapidapi.com/submissions/batch',
+    url: 'https://judge029.p.rapidapi.com/submissions/batch',
+    params: {
+      base64_encoded: 'false'
+    },
     headers: {
       'x-rapidapi-key': 'c631a26080msha7d210ffe11b45fp1d52e8jsnd66345225e85',
-      'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
+      'x-rapidapi-host': 'judge029.p.rapidapi.com',
       'Content-Type': 'application/json'
     },
     data: {
-
-      Submissions
-
+      submissions
     }
   };
 
@@ -54,15 +55,15 @@ const submitToken = async (resultToken) => {
 
   const options = {
     method: 'GET',
-    url: 'https://judge0-ce.p.rapidapi.com/submissions/batch',
+    url: 'https://judge029.p.rapidapi.com/submissions/batch',
     params: {
-      tokens: resultToken.join(),
+      tokens: resultToken.join(","),
       base64_encoded: 'false',
       fields: '*'
     },
     headers: {
       'x-rapidapi-key': 'c631a26080msha7d210ffe11b45fp1d52e8jsnd66345225e85',
-      'x-rapidapi-host': 'judge0-ce.p.rapidapi.com'
+      'x-rapidapi-host': 'judge029.p.rapidapi.com'
     }
   };
 
@@ -76,13 +77,17 @@ const submitToken = async (resultToken) => {
   }
 
   while (true) {
+
     const result = await fetchData();
-    const IsResultObtained = result.Submissions.every((r) => r.status_id > 2)
+
+    const IsResultObtained = result.submissions.every((r) => r.status_id > 2);
 
     if (IsResultObtained)
-      return result.Submissions;
+      return result.submissions;
+
 
     await waiting(1000);
+
   }
 }
 

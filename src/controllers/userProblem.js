@@ -10,14 +10,14 @@ const createProblem = async (req, res) => {
       const languageId = getLanguageById(language);
 
       //I am Creating Batch Submission
-      const Submissions = visibleTestCases.map((testcase) => ({
+      const submissions = visibleTestCases.map((testcase) => ({
         source_code: completeCode,
         language_id: languageId,
         stdin: testcase.input,
         expected_output: testcase.output
       }));
 
-      const submitResult = await submitBatch(Submissions);
+      const submitResult = await submitBatch(submissions);
 
       const resultToken = submitResult.map((value) => value.token);
 
@@ -46,4 +46,57 @@ const createProblem = async (req, res) => {
 
 }
 
-module.exports = createProblem;
+// module.exports = createProblem;
+
+
+const updateProblem = async (req, res) => {
+
+  const { id } = req.params;
+  const { title, description, difficulty, tags, visibleTestCases, hiddenTestCases, startCode, referenceSolution, problemCreator } = req.body;
+
+  try {
+    if (!id) {
+      return res.status(400).send("Missing ID Field")
+    }
+    const DsaProblem = await Problem.findById(id)
+    if (!DsaProblem) {
+      return res.status(404).send("ID is not present in server")
+    }
+
+    for (const { language, completeCode } of referenceSolution) {
+      const languageId = getLanguageById(language);
+
+      //I am creating Batch Submission
+      const submissions = visibleTestCases.map((testcase) => ({
+
+        source_code: completeCode,
+        language_id: languageId,
+        stdin: testcase.input,
+        expected_output: testcase.output
+      }));
+
+      const submitResult = await submitBatch(submissions);
+
+      const resultToken = submitResult.map((value) => value.token);
+
+      const testResult = await submitToken(resultToken);
+
+      for (const test of testResult) {
+        if (test.status_id != 3) {
+          return res.status(400).send("Error Occured")
+        }
+      }
+
+      const newProblem = await Problem.findByIdAndUpdate(id, { ...req.body }, { runValidators: true, new: true })
+      res.status(200).send(newProblem)
+    }
+  }
+  catch (err) {
+    res.status(500).send("Error: " + err)
+  }
+
+}
+
+
+
+module.exports = { createProblem, updateProblem };
