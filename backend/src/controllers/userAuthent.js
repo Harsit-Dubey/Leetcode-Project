@@ -17,7 +17,7 @@ const register = async (req, res) => {
     req.body.role = 'user';
 
 
-    const user = await User.create({ ...req.body, role: "admin" });
+    const user = await User.create({ ...req.body, role: "user" });
     const token = jwt.sign({ _id: user._id, emailId: emailId, role: 'user' }, process.env.JWT_KEY, { expiresIn: 60 * 60 })
     res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
     res.status(201).send("User Registered Successfully");
