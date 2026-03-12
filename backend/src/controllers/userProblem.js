@@ -123,7 +123,7 @@ const getProblemById = async (req, res) => {
     if (!id)
       return res.status(400).send("ID is Missing");
 
-    const getProblem = await Problem.findById(id);
+    const getProblem = await Problem.findById(id).select('_id title description difficulty tags visibleTestCases startCode referenceSolution ');
 
     if (!getProblem)
       return res.status(404).send("Problem is Missing");
@@ -138,7 +138,7 @@ const getProblemById = async (req, res) => {
 
 const getAllProblem = async (req, res) => {
   try {
-    const getProblem = await Problem.find({});
+    const getProblem = await Problem.find({}).select('_id title difficulty tags');
 
     if (getProblem.length == 0)
       return res.status(404).send("Problem is Missing");
@@ -166,4 +166,24 @@ const solvedAllProblemByUser = async (req, res) => {
   }
 }
 
-module.exports = { createProblem, updateProblem, deleteProblem, getProblemById, getAllProblem, solvedAllProblemByUser };
+const submittedProblem = async (req, res) => {
+
+  try {
+
+    const userId = req.result._id;
+    const problemId = req.params.pid;
+
+    const ans = await Submission.find({ userId, problemId });
+
+    if (ans.length == 0)
+      res.status(200).send("No Submission is persent");
+
+    res.status(200).send(ans);
+
+  }
+  catch (err) {
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+module.exports = { createProblem, updateProblem, deleteProblem, getProblemById, getAllProblem, solvedAllProblemByUser, submittedProblem };
