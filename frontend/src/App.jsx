@@ -5,13 +5,19 @@ import Signup from "./pages/Signup";
 import { useDispatch, useSelector } from "react-redux";
 import { checkAuth } from "./authSlice";
 import { useEffect } from "react";
+import Admin from "./pages/Admin";
+import AdminPanel from "./components/AdminPanel";
+import AdminDelete from "./components/AdminDelete";
+import AdminUpload from "./components/AdminUpload";
+import AdminVideo from "./components/AdminVideo";
+import AdminUpdate from "./components/AdminUpdate";
 import ProblemPage from "./pages/ProblemPage";
 
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
 
-  // check initial authentication
+  // // check initial authentication
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
@@ -51,6 +57,48 @@ function App() {
             )
           }
         />
+        <Route
+          path="/admin/create"
+          element={
+            isAuthenticated && user?.role === "admin" ? (
+              <AdminPanel />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/admin/delete"
+          element={
+            isAuthenticated && user?.role === "admin" ? (
+              <AdminDelete />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/admin/upload/:problemId"
+          element={
+            isAuthenticated && user?.role === "admin" ? (
+              <AdminUpload />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/admin/video"
+          element={
+            isAuthenticated && user?.role === "admin" ? (
+              <AdminVideo />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route path="/admin/update/:problemId" element={<AdminUpdate />} />
+
         <Route path="/problem/:problemId" element={<ProblemPage />}></Route>
       </Routes>
     </>

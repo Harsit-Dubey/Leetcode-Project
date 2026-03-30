@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../utils/axiosClient";
-import { useNavigate } from "react-router";
+import { NavLink } from "react-router";
 
-const AdminDelete = () => {
-  const navigate = useNavigate();
+const AdminVideo = () => {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +17,7 @@ const AdminDelete = () => {
       const { data } = await axiosClient.get("/problem/getAllProblem");
       setProblems(data);
     } catch (err) {
-      setError("Failed to fetch Problems");
+      setError("Failed to fetch problems");
       console.error(err);
     } finally {
       setLoading(false);
@@ -30,11 +29,11 @@ const AdminDelete = () => {
       return;
 
     try {
-      await axiosClient.delete(`/problem/delete/${id}`);
+      await axiosClient.delete(`/video/delete/${id}`);
       setProblems(problems.filter((problem) => problem._id !== id));
     } catch (err) {
-      setError("Failed to delete problem");
-      console.error(err);
+      setError(err);
+      console.log(err);
     }
   };
 
@@ -63,16 +62,16 @@ const AdminDelete = () => {
               d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>{error}</span>
+          <span>{error.response.data.error}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="conatiner mx-auto p-4">
+    <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Delete Problems</h1>
+        <h1 className="text-3xl font-bold">Video Upload and Delete</h1>
       </div>
 
       <div className="overflow-x-auto">
@@ -94,9 +93,9 @@ const AdminDelete = () => {
                 <td>
                   <span
                     className={`badge ${
-                      problem.difficulty === "easy"
+                      problem.difficulty === "Easy"
                         ? "badge-success"
-                        : problem.difficulty === "medium"
+                        : problem.difficulty === "Medium"
                           ? "badge-warning"
                           : "badge-error"
                     }`}
@@ -108,15 +107,17 @@ const AdminDelete = () => {
                   <span className="badge badge-outline">{problem.tags}</span>
                 </td>
                 <td>
-                  <div className="flex space-x-2">
-                    {/* 🔥 EDIT BUTTON */}
-                    <button
-                      onClick={() => navigate(`/admin/update/${problem._id}`)}
-                      className="btn btn-sm btn-warning"
+                  <div className="flex space-x-1">
+                    <NavLink
+                      to={`/admin/upload/${problem._id}`}
+                      className={`btn bg-blue-600`}
                     >
-                      Edit
-                    </button>
-
+                      Upload
+                    </NavLink>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex space-x-2">
                     <button
                       onClick={() => handleDelete(problem._id)}
                       className="btn btn-sm btn-error"
@@ -134,4 +135,6 @@ const AdminDelete = () => {
   );
 };
 
-export default AdminDelete;
+export default AdminVideo;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////

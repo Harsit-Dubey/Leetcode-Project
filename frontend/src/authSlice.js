@@ -6,46 +6,57 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const respose = await axiosClient.post("/user/register", userData);
-      return respose.data.user
+      const response = await axiosClient.post('/user/register', userData);
+      return response.data.user;
     } catch (error) {
-      return rejectWithValue(error)
+      return rejectWithValue(error);
     }
   }
 );
 
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (Credentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
-      const respose = await axiosClient.post("/user/login", Credentials);
-      return respose.data.user;
+      const response = await axiosClient.post('/user/login', credentials);
+
+      // console.log(response.data);
+
+      // TOKEN STORE KARO
+      localStorage.setItem("token", response.data.token);
+
+      return response.data.user;
     } catch (error) {
       return rejectWithValue(error);
     }
   }
 );
 
+
 export const checkAuth = createAsyncThunk(
   'auth/check',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axiosClient.get("/user/check");
+      const { data } = await axiosClient.get('/user/check');
+
       return data.user;
+
     } catch (error) {
-      if (error.respose?.status == 401) {
-        return rejectWithValue(null);
+      if (error.response?.status === 401) {
+        return rejectWithValue(null); // Special case for no session
       }
       return rejectWithValue(error);
     }
   }
 );
 
+
+
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await axiosClient.post("/user/logout");
+      await axiosClient.post('/user/logout');
       return null;
     } catch (error) {
       return rejectWithValue(error);
@@ -77,9 +88,9 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || 'something went wrong';
         state.isAuthenticated = false;
         state.user = null;
+        state.error = action.payload?.message || 'something went wrong';
       })
 
       //login user cases

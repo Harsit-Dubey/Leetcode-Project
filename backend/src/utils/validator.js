@@ -3,7 +3,7 @@ const validator = require("validator")
 
 const validate = (data) => {
 
-  const mandatoryField = ['firstname', 'emailId', 'password'];
+  const mandatoryField = ['firstName', 'emailId', 'password'];
 
   const IsAllowed = mandatoryField.every((k) => Object.keys(data).includes(k))
 
@@ -14,7 +14,7 @@ const validate = (data) => {
     throw new Error("Invalid Email")
 
   if (!validator.isStrongPassword(data.password))
-    throw new Error("week password")
+    throw new Error("weak password")
 
 }
 

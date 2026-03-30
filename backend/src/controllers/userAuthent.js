@@ -13,7 +13,7 @@ const register = async (req, res) => {
     //validate the data
     validate(req.body);
 
-    const { firstname, emailId, password } = req.body;
+    const { firstName, emailId, password } = req.body;
     req.body.password = await bcrypt.hash(password, 10)
     req.body.role = 'user';
 
@@ -28,15 +28,19 @@ const register = async (req, res) => {
       role: user.role,
     }
 
-    res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000
+    });
     res.status(201).json({
       user: reply,
-      message: "Loggin Successfully"
+      message: "Register Successfully"
     })
 
   }
   catch (err) {
-    res.status(400).send("Error: " + err)
+    res.status(400).send("Error: " + err.message)
   }
 
 }
@@ -53,7 +57,9 @@ const login = async (req, res) => {
       throw new Error("Invalide Credentials")
 
     const user = await User.findOne({ emailId })
-    const match = bcrypt.compare(password, user.password)
+    if (!user)
+      throw new Error("Invalid Credentials");
+    const match = await bcrypt.compare(password, user.password)
 
     if (!match)
       throw new Error("Invalide Credentials")
@@ -67,14 +73,18 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign({ _id: user._id, emailId: emailId, role: user.role }, process.env.JWT_KEY, { expiresIn: 60 * 60 })
-    res.cookie('token', token, { maxAge: 60 * 60 * 1000 })
-    res.status(201).json({
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000
+    })
+    res.status(200).json({
       user: reply,
       message: "Loggin Successfully"
     })
   }
   catch (err) {
-    res.status(401).send("Error: " + err)
+    res.status(401).send("Error: " + err.message)
   }
 
 }
@@ -89,11 +99,11 @@ const logout = async (req, res) => {
     await redisClient.set(`token:${token}`, 'Blocked');
     await redisClient.expireAt(`token:${token}`, payload.exp);
 
-    res.cookie("token", null, { expries: new Date(Date.now()) });
+    res.cookie("token", null, { expires: new Date(Date.now()) });
     res.send("Logged Out Successfully")
   }
   catch (err) {
-    res.status(503).send("Error: " + err)
+    res.status(503).send("Error: " + err.message)
   }
 
 }
@@ -111,12 +121,16 @@ const adminRegister = async (req, res) => {
     const user = await User.create({ ...req.body, role: "admin" })
     const token = jwt.sign({ _id: user._id, emailId: emailId, role: user.role }, process.env.JWT_KEY, { expiresIn: 60 * 60 });
     // console.log(user.role)
-    res.cookie('token', token, { maxAge: 60 * 60 * 1000 });
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000
+    });
     res.status(201).send("Admin Registered Successfully")
 
   }
   catch (err) {
-    res.status(400).send("Error: " + err)
+    res.status(400).send("Error: " + err.message)
   }
 
 }

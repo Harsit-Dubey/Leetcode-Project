@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  firstname: {
+  firstName: {
     type: String,
     required: true,
     minLength: 3,
     maxLength: 20
   },
-  lastname: {
+  lastName: {
     type: String,
     minLength: 3,
     maxLength: 20
@@ -34,9 +34,9 @@ const userSchema = new Schema({
   problemSolved: {
     type: [{
       type: Schema.Types.ObjectId,
-      ref: 'problem'
+      ref: 'problem',
+      unique: true
     }],
-    unique: true
   },
   password: {
     type: String,

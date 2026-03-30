@@ -9,7 +9,7 @@ const submitCode = async (req, res) => {
     const userId = req.result._id;
     const problemId = req.params.id;
 
-    const { code, language } = req.body;
+    let { code, language } = req.body;
 
     if (!userId || !code || !problemId || !language)
       return res.status(400).send("Some Field Missing");
@@ -108,7 +108,7 @@ const runCode = async (req, res) => {
     const userId = req.result._id;
     const problemId = req.params.id;
 
-    const { code, language } = req.body;
+    let { code, language } = req.body;
 
     if (!userId || !code || !problemId || !language)
       return res.status(400).send("Some Field Missing");
@@ -164,6 +164,7 @@ const runCode = async (req, res) => {
     });
   }
   catch (err) {
+    console.error("RUN ERROR:", err);
     res.status(500).send("Internal Server Error: " + err);
   }
 }
