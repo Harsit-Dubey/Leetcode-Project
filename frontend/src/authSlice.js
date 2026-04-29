@@ -7,6 +7,7 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosClient.post('/user/register', userData);
+      console.log(response);
       return response.data.user;
     } catch (error) {
       return rejectWithValue(error);
@@ -148,3 +149,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
+

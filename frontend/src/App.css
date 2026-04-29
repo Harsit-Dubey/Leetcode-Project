@@ -1,0 +1,32 @@
+/* Chrome, Edge, Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px #1f2937 inset !important; /* Dark gray = bg-gray-800 */
+    -webkit-text-fill-color: #ffffff !important; /* text white */
+}
+
+/* Firefox */
+input:-moz-autofill {
+    box-shadow: 0 0 0px 1000px #1f2937 inset !important; /* Dark gray = bg-gray-800 */
+    -moz-text-fill-color: #ffffff !important;
+}
+
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

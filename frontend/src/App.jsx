@@ -12,6 +12,8 @@ import AdminUpload from "./components/AdminUpload";
 import AdminVideo from "./components/AdminVideo";
 import AdminUpdate from "./components/AdminUpdate";
 import ProblemPage from "./pages/ProblemPage";
+// index.js ya App.js
+import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
@@ -19,10 +21,12 @@ function App() {
 
   // // check initial authentication
   useEffect(() => {
-    dispatch(checkAuth());
+    if (document.cookie.includes("token")) {
+      dispatch(checkAuth());
+    }
   }, [dispatch]);
 
-  if (loading) {
+  if (loading && !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <span className="loading loading-spinner loading-lg"></span>
